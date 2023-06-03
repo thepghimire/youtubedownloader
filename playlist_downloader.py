@@ -14,7 +14,7 @@ def get_best_audio_stream(streams):
     required_abr = 0
     required_stream = None
     for stream in streams:
-        if stream.mime_type == "audio/webm":
+        if stream.mime_type == "audio/webm" and stream.abr is not None:
             abr = int(str(stream.abr).replace("kbps", ""))
             if abr > required_abr:
                 required_abr = abr
@@ -23,21 +23,25 @@ def get_best_audio_stream(streams):
 
 def get_audio_streams(video_url):
     video = YouTube(video_url)
-    streams = video.streams.filter(only_audio=True)
+    try:
+        streams = video.streams.filter(only_audio=True)
+    except Exception as e:
+        return None
     return streams
 
 def download_audio(stream, playlist_name, path=DOWNLOAD_BASE_PATH):
     download_path = path + playlist_name
     if stream:
         stream.download(download_path)
-    print("Finished downloading {}".format(stream.title))
+        print("Finished downloading {}".format(stream.title))
     
 def download_single_mp3(youtube_url, playlist_name="/Mix"):
     download_timer = Timer() 
     streams = get_audio_streams(youtube_url) #(get only audio stream)
-    best_stream = get_best_audio_stream(streams)
-    download_audio(best_stream, playlist_name)
-    download_timer.end(text="Downloading")
+    if streams is not None:
+        best_stream = get_best_audio_stream(streams)
+        download_audio(best_stream, playlist_name)
+        download_timer.end(text="Downloading")
 
 def clear_downloads_folder():
     for folder in os.listdir(DOWNLOAD_BASE_PATH):
@@ -53,7 +57,7 @@ if __name__ == "__main__":
         playlist = Playlist(playlist_url)
         for i, video in enumerate(playlist):
             playlist_name = "/"+playlist.title if playlist.title else "/Mix"
-            # download_single_mp3(video, playlist_name)
+            download_single_mp3(video, playlist_name)
             print("Downloaded Song {}/{} \n Playlist {}/{}".format(i+1, len(playlist),j+1, len(playlist_list)))
     root_timer.end(text="Entire")
     

@@ -1,3 +1,3 @@
-DOWNLOAD_BASE_PATH = "/home/pranjal/Projects/youtube-downloader/downloaded"
-CONVERT_BASE_PATH = "/home/pranjal/Projects/youtube-downloader/converted"
-INPUT_PLAYLIST_URLS = "/home/pranjal/Projects/youtube-downloader/playlist_urls.txt"
+DOWNLOAD_BASE_PATH = "/home/thepghimire/Projects/youtubedownloader/downloaded"
+CONVERT_BASE_PATH = "/home/thepghimire/Projects/youtubedownloader/converted"
+INPUT_PLAYLIST_URLS = "/home/thepghimire/Projects/youtubedownloader/playlist_urls.txt"
