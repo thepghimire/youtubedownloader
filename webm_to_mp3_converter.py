@@ -1,3 +1,4 @@
+import shutil
 from config import DOWNLOAD_BASE_PATH, CONVERT_BASE_PATH
 import subprocess
 import os
@@ -6,16 +7,11 @@ from timer import Timer
 path_to_webm_files = DOWNLOAD_BASE_PATH
 
 
-# iterate over files in
-# that directory
-# for filename in os.listdir(DOWNLOAD_BASE_PATH):
-#     f = os.path.join(DOWNLOAD_BASE_PATH, filename)
-#     # checking if it is a file
-#     if os.path.isfile(f):
-#         mp3_filename = filename.replace(".webm", ".mp3")
-#         output_path = DOWNLOAD_BASE_PATH + "converted/"+mp3_filename
-#         print(subprocess.run(f'ffmpeg -i \"{f}\" \"{output_path}\"',shell=True,capture_output=True))
-#         # print(subprocess.run('ffmpeg -i "path/filename".mp4 "filename".mp3',shell=True,capture_output=True))]
+def clear_downloads_folder():
+    for folder in os.listdir(DOWNLOAD_BASE_PATH):
+        existing_folder_path = DOWNLOAD_BASE_PATH+"/"+folder
+        shutil.rmtree(existing_folder_path, ignore_errors=False, onerror=None)
+        return None
 
 root_timer = Timer()
 for root, dirs, files in os.walk(DOWNLOAD_BASE_PATH, topdown=False):
@@ -38,3 +34,4 @@ for root, dirs, files in os.walk(DOWNLOAD_BASE_PATH, topdown=False):
                 print(mp3_filename + "is already present in the drive.")
                 print("File {}/{} from playlist {}".format(i+1, len(files), playlist_name_from_root))
 root_timer.end("Entire Conversion")
+# clear_downloads_folder()

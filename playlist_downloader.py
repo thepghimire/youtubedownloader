@@ -21,8 +21,8 @@ def get_best_audio_stream(streams):
                 required_stream = stream
     return required_stream
 
-def get_audio_streams(video_url):
-    video = YouTube(video_url)
+def get_audio_streams(video_url):    
+    video = YouTube(video_url, use_oauth=True, allow_oauth_cache=True)
     try:
         streams = video.streams.filter(only_audio=True)
     except Exception as e:
@@ -32,8 +32,9 @@ def get_audio_streams(video_url):
 def download_audio(stream, playlist_name, path=DOWNLOAD_BASE_PATH):
     download_path = path + playlist_name
     if stream:
+        print("Started downloading {}".format(stream.title))
         stream.download(download_path)
-        print("Finished downloading {}".format(stream.title))
+        print("Finished downloading Song.")
     
 def download_single_mp3(youtube_url, playlist_name="/Mix"):
     download_timer = Timer() 
@@ -50,7 +51,9 @@ def clear_downloads_folder():
         return None
 
 if __name__ == "__main__":
-    clear_downloads_folder()
+    clear_downloads = True 
+    if clear_downloads:
+        clear_downloads_folder()
     playlist_list = get_playlist(INPUT_PLAYLIST_URLS)
     root_timer = Timer()
     for j, playlist_url in enumerate(playlist_list):
