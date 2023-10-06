@@ -15,6 +15,6 @@ def get_path(foldername):
             path = input_path 
     return path 
 
-DOWNLOAD_BASE_PATH = get_path("downloaded")
+DOWNLOAD_BASE_PATH = get_path("downloaded_new")
 CONVERT_BASE_PATH = get_path("converted")
 INPUT_PLAYLIST_URLS = os.getcwd() + "/playlist_urls.txt"        

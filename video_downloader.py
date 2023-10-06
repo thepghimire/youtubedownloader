@@ -10,6 +10,15 @@ def get_playlist(path_to_text_file):
         text = text.split("\n")
         return text
 
+def get_best_video_stream(streams):
+    required_stream = None
+    for stream in streams:
+        if stream.mime_type == "video/mp4" and stream.resolution is not None:
+            if stream.resolution == "1080p":
+                required_stream = stream
+                break
+    return required_stream
+
 def get_best_audio_stream(streams):
     required_abr = 0
     required_stream = None
@@ -21,28 +30,39 @@ def get_best_audio_stream(streams):
                 required_stream = stream
     return required_stream
 
-def get_audio_streams(video_url):    
+def get_video_streams(video_url):    
     video = YouTube(video_url, use_oauth=True, allow_oauth_cache=True)
     try:
-        streams = video.streams.filter(only_audio=True)
+        streams = video.streams.filter(adaptive=True)
     except Exception as e:
         return None
     return streams
 
-def download_audio(stream, playlist_name, path=DOWNLOAD_BASE_PATH):
-    download_path = path + playlist_name
+def get_audio_streams(video_url):
+    video = YouTube(video_url, use_oauth=True, allow_oauth_cache=True)
+    try:
+        streams = video.streams.filter()
+    except Exception as e:
+        return None
+    return streams
+
+def download_audio(stream, playlist_name, path=DOWNLOAD_BASE_PATH, vid_audio=False):
+    download_path = path + playlist_name if vid_audio else path + playlist_name
     if stream:
         print("Started downloading {}".format(stream.title))
         stream.download(download_path)
         print("Finished downloading Song.")
     
-def download_single_mp3(youtube_url, playlist_name="/Mix"):
+def download_single_mp4(youtube_url, playlist_name="/Mix"):
     download_timer = Timer() 
-    streams = get_audio_streams(youtube_url) #(get only audio stream)
+    streams = get_video_streams(youtube_url)
     if streams is not None:
-        best_stream = get_best_audio_stream(streams)
+        best_stream = get_best_video_stream(streams)
         download_audio(best_stream, playlist_name)
+        best_audio_stream = get_best_audio_stream(streams)
+        download_audio(best_audio_stream, playlist_name, vid_audio=True)
         download_timer.end(text="Downloading")
+
 
 def clear_downloads_folder():
     for folder in os.listdir(DOWNLOAD_BASE_PATH):
@@ -60,7 +80,7 @@ if __name__ == "__main__":
         playlist = Playlist(playlist_url)
         for i, video in enumerate(playlist):
             playlist_name = "/"+playlist.title if playlist.title else "/Mix"
-            download_single_mp3(video, playlist_name)
+            download_single_mp4(video, playlist_name)
             print("Downloaded Song {}/{} \n Playlist {}/{}".format(i+1, len(playlist),j+1, len(playlist_list)))
     root_timer.end(text="Entire")
     
